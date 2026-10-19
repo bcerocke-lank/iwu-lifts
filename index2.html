@@ -1,0 +1,873 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>IWU Baseball Lifts</title>
+<meta name="theme-color" content="#1d6a44">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="IWU Lifts">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231d6a44'/%3E%3Cpath d='M14 22v20M8 26v12M50 22v20M56 26v12M14 32h36' stroke='white' stroke-width='5' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: single-column phone app, sticky header, content cards, fixed bottom tab bar */
+:root{
+  --bg:#f2f5f1; --surface:#ffffff; --ink:#14211a; --muted:#5b6b62; --line:#d8e1da;
+  --accent:#1d6a44; --accent-ink:#ffffff; --accent-soft:#e2efe6;
+  --gold:#a8790a; --good:#1d7a45; --bad:#b3362c; --chip:#edf1ee;
+  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#0c1410; --surface:#141f19; --ink:#e6eee8; --muted:#93a59a; --line:#24342b;
+  --accent:#52c086; --accent-ink:#06130c; --accent-soft:#183326;
+  --gold:#e0b341; --good:#52c086; --bad:#f07a6f; --chip:#1b2a22; color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{background:var(--bg);color:var(--ink);margin:0}
+body{font-family:var(--body);font-size:16px;line-height:1.45;padding:0 16px calc(84px + env(safe-area-inset-bottom,0px));-webkit-text-size-adjust:100%}
+[hidden]{display:none!important}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:14px;padding-block:12px 24px}
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);margin:0 -16px;padding:calc(12px + env(safe-area-inset-top,0px)) 16px 10px;border-bottom:1px solid var(--line)}
+.top-inner{max-width:640px;margin:0 auto;display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{font-family:var(--display);font-weight:700;font-size:1.5rem;letter-spacing:.02em;text-transform:uppercase;line-height:1}
+.brand span{color:var(--accent)}
+.phase-tag{font-size:.8rem;color:var(--muted);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+h2{font-family:var(--display);font-weight:700;font-size:1.6rem;text-transform:uppercase;letter-spacing:.02em;margin:0;line-height:1.05;text-wrap:balance}
+h3{font-family:var(--display);font-weight:600;font-size:1.15rem;margin:0;letter-spacing:.02em;text-transform:uppercase}
+p{margin:0}
+.muted{color:var(--muted)}
+.small{font-size:.85rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.between{justify-content:space-between}
+label{font-size:.78rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:flex;flex-direction:column;gap:4px;min-width:0}
+input,select{font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;min-width:0;width:100%}
+input:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button{font:inherit;font-weight:700;cursor:pointer;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:11px 16px;letter-spacing:.02em}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+button.danger{color:var(--bad)}
+button.link{border:0;background:none;padding:4px 0;color:var(--accent);font-weight:600}
+button:disabled{opacity:.5;cursor:default}
+a{color:var(--accent)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.namegrid{display:grid;grid-template-columns:1fr 6rem;gap:10px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--chip);color:var(--muted)}
+.chip.ok{background:var(--accent-soft);color:var(--good)}
+.chip.live{background:var(--accent);color:var(--accent-ink)}
+.num{font-variant-numeric:tabular-nums}
+.big-num{font-family:var(--display);font-weight:700;font-size:2.2rem;line-height:1}
+.msg{font-size:.9rem;font-weight:600;min-height:1.2em}
+.msg.err{color:var(--bad)} .msg.ok{color:var(--good)}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--chip);border-radius:10px;padding:4px;gap:4px}
+.seg button{border:0;background:transparent;color:var(--muted);padding:9px}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgb(0 0 0 / .12)}
+/* tabs */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:10;background:var(--surface);border-top:1px solid var(--line);padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px));display:flex;justify-content:center}
+nav.tabs .in{display:flex;gap:4px;width:100%;max-width:640px}
+nav.tabs button{flex:1;border:0;background:transparent;padding:8px 2px;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:3px}
+nav.tabs button[aria-current="true"]{color:var(--accent)}
+nav.tabs svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+/* exercise cards */
+.ex{border-top:1px solid var(--line);padding-top:12px;display:flex;flex-direction:column;gap:8px}
+.ex:first-of-type{border-top:0;padding-top:0}
+.ex-name{font-weight:700;font-size:1.02rem}
+.rx{display:flex;flex-wrap:wrap;gap:6px}
+.sets{display:grid;grid-template-columns:2.2rem 1fr 1fr;gap:6px 8px;align-items:center}
+.sets .h{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.sets .n{font-family:var(--display);font-weight:700;font-size:1.1rem;color:var(--muted);text-align:center}
+.sets input{padding:8px 10px}
+.last{font-size:.82rem;color:var(--muted)}
+.savebar{position:sticky;bottom:calc(74px + env(safe-area-inset-bottom,0px));background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;gap:10px;box-shadow:0 6px 20px rgb(0 0 0 / .08)}
+/* leaderboard */
+.lb-row{display:grid;grid-template-columns:2.2rem 1fr auto;gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.lb-row:first-child{border-top:0}
+.rank{font-family:var(--display);font-weight:700;font-size:1.4rem;text-align:center;color:var(--muted)}
+.lb-row.r1 .rank{color:var(--gold)}
+.lb-row.r2 .rank,.lb-row.r3 .rank{color:var(--ink)}
+.lb-row.me{background:var(--accent-soft);margin:0 -10px;padding-inline:10px;border-radius:8px}
+.lb-name{font-weight:700;min-width:0;overflow-wrap:anywhere}
+.lb-vol{font-family:var(--display);font-weight:700;font-size:1.3rem;text-align:right}
+.lb-vol small{font-family:var(--body);font-size:.72rem;font-weight:600;color:var(--muted);margin-left:2px}
+/* coach */
+.code{font-family:var(--display);font-weight:700;font-size:clamp(4.5rem,24vw,9rem);letter-spacing:.12em;text-align:center;line-height:1;color:var(--accent)}
+.bar{height:6px;border-radius:3px;background:var(--chip);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);transition:width 1s linear}
+.qr{display:flex;justify-content:center;padding:12px;background:#ffffff;border-radius:10px;align-self:center}
+.qr img,.qr canvas{display:block;max-width:100%;height:auto}
+.codein{font-family:var(--display);font-weight:700;font-size:2.4rem;letter-spacing:.3em;text-align:center;padding:10px}
+.att-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line)}
+.att-row:first-child{border-top:0}
+.empty{text-align:center;padding:18px 8px;color:var(--muted);font-size:.95rem}
+.pr{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px solid var(--line)}
+.pr:first-child{border-top:0}
+.pr span:first-child{min-width:0;overflow-wrap:anywhere}
+.tbl-wrap{overflow-x:auto;margin:0 -4px}
+table.wk{border-collapse:collapse;width:100%;font-size:.9rem}
+table.wk th,table.wk td{padding:6px 4px;border-top:1px solid var(--line);text-align:center}
+table.wk th{font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border-top:0}
+table.wk td:first-child,table.wk th:first-child{text-align:left;white-space:nowrap}
+table.wk .y{color:var(--good);font-weight:700}
+table.wk .tot{font-weight:700}
+@media (min-width:900px){ body.coach .wrap{max-width:1000px} body.coach .coach-cols{display:grid;grid-template-columns:1.1fr 1fr;gap:14px;align-items:start} }
+.coach-cols{display:flex;flex-direction:column;gap:14px}
+@media (prefers-reduced-motion: reduce){.bar i{transition:none}}
+</style>
+</head>
+<body>
+<header class="top"><div class="top-inner">
+  <div class="brand">IWU <span>Baseball</span> Lifts</div>
+  <div class="phase-tag" id="phaseTag"></div>
+</div></header>
+
+<main class="wrap" id="app">
+  <div class="card"><p class="muted">Loading…</p></div>
+</main>
+
+<nav class="tabs" id="tabs" hidden><div class="in" id="tabsIn"></div></nav>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+// ===================== SETTINGS =====================
+// Paste your Supabase Project URL and publishable (or anon) key here.
+const SUPABASE_URL = "https://qntuxlacekhekhciejlo.supabase.co";
+const SUPABASE_KEY = "sb_publishable__d4qBgUm3U0TEyerJS1wxQ_t3UZUlwM";
+// ====================================================
+
+// Program: Phases 1–5 from "2026-2027 IWU Baseball Lifting Program"
+// Exercise: [name, sets, reps, tempo, weight/RPE]; sets or reps can be a per-week array.
+const W34 = (a,b)=>[a,a,b,b];
+const PROGRAM = [
+ {id:"P1", name:"Phase 1 · Zero Block", weeks:["2026-10-12","2026-10-19"], note:"Pay attention to tempo. ECC = slow, controlled lowering (3s ECC = 3 seconds down).", days:[
+  {name:"Day 1", mb:"MB Side Scoop Rebounds 3×10ea (facing wall)", ex:[
+   ["DB Bulgarian Split Squat (1 W/U set)","3","6ea","3s hold","RPE 6"],
+   ["SA Prone Trap Raise","3","8ea","3s ECC / 3s hold",""],
+   ["Goblet Lateral Lunges","3","6ea","","RPE 6"],
+   ["Wide Stance Anti Rotation","3","4ea","4s ECC",""],
+   ["Mini Band Handcuff ER Series","3","6ea","3s hold","Band"],
+   ["High Box SL Squats","3","5ea","3s ECC","RPE 6"],
+   ["Copenhagen Side Plank","3","20sec ea","","BW"],
+   ["Bear Crawl (FWD/BKWD)","3","10yds","",""]]},
+  {name:"Day 2", mb:"MB OH ½ Moon Slams 3×10ea", ex:[
+   ["1 Arm on MB Push Ups","3","6ea","3s hold","BW"],
+   ["Dead Stop DB Row","3","6ea","3s hold","RPE 6"],
+   ["HK SA Landmine Press + Reach","3","6ea","","RPE 6"],
+   ["Dead Hang Scap Pull Ups","3","10ea","","BW"],
+   ["Stir the Pot on SB","3","10ea","3s/rep",""],
+   ["TRX Y Negatives","3","6","3s ECC","BW"],
+   ["2 Way Forearm Curls","3","10ea","1s hold","RPE 6"],
+   ["Inverted Wall Walks","3","3ea","3s hold","BW"]]},
+  {name:"Day 3", mb:"MB HK Lunge Scoop Rebounds 3×10ea", ex:[
+   ["Sumo BB Deadlift","3","6","3/1","RPE 6"],
+   ["PVC Pipe Prayers","3","6","Full breath",""],
+   ["Goblet DB Squats","3","6ea","3s hold","RPE 6"],
+   ["Eccentric Rev Crunches","3","10ea","3s ECC","BW"],
+   ["Door Frame Pec Stretch","3","5","5s hold",""],
+   ["TGUs","3","3ea","","RPE 6"],
+   ["1 Arm DB Farmers Walk","3","30yds ea","","RPE 7"],
+   ["1 DB SLDL (Oppo Leg/Arm)","3","5","","RPE 6"]]}]},
+ {id:"P2", name:"Phase 2 · Early Strength", weeks:["2026-10-26","2026-11-02","2026-11-09","2026-11-16"], note:"Build up intensity on core lifts. Add mass.", days:[
+  {name:"Day 1 · Max Effort Lower", mb:"", ex:[
+   ["Front Squat (w/u 12, 8)","4",W34("6, 6, 6+, 6+","6, 6, 6+, 3+"),"3/2/1","RPE 8/9"],
+   ["SA Prone Trap Raise",["3","4","4","4"],"6ea","3s hold","3–5 lb"],
+   ["Sumo BB Deadlift","4",W34("6, 6, 6+, 6+","6, 6, 6+, 3+"),"","RPE 8/9"],
+   ["OH Band 2x Leg Lower",["3","4","4","4"],"8-10","4s ECC",""],
+   ["SA Alt. KB Swing","3","8","","RPE 7/8"],
+   ["Jumping Leg Switch","3","3ea","","BW"],
+   ["Pallof Press ABCs","4","2ea","1s/letter",""],
+   ["Heavy Sled March to Drag","4","10yd ea","","RPE 10"]]},
+  {name:"Day 2 · Dynamic Effort Upper", mb:"MB Tall Kneeling Chest Pass 3×10", ex:[
+   ["SA Dumbbell Snatch (DB or KB)","4","6ea","Explode",""],
+   ["X Band Walk","4","10ea","","Band"],
+   ["Spiderman Push Ups","4","12","","BW"],
+   ["Cossack Squats","4","8ea","",""],
+   ["Supine SL Elevated TRX Row","4","6ea","",""],
+   ["BB OH Squat","3","10","","Bar only"],
+   ["Inch Worm Plus","3","10","","BW"],
+   ["Side Plank Rows","3","10ea","",""]]},
+  {name:"Day 3 · Dynamic Effort Lower", mb:"MB Rotating OH SL Slam 3×6ea", ex:[
+   ["Front Rack Bulgarian SS","4","6ea","","RPE 7/8"],
+   ["HK Scarecrows","4","5ea","2s hold",""],
+   ["BB SL Deadlift","4","6ea","3/1/1","RPE 7"],
+   ["Band Pull Apart Circuit","4","10ea","",""],
+   ["DB Pistol Squat to Box","4","6ea","","RPE 7"],
+   ["Dumbbell Pullover","4","8-12","",""],
+   ["BB Hip Thruster (2s hold)","3","8","","RPE 7"],
+   ["Valslide Wax On/Off","3","10ea","",""],
+   ["Lateral Sled Drag","3","10yd ea","",""]]},
+  {name:"Day 4 · Max Effort Upper", mb:"MB Scoop Throws 4×6ea", ex:[
+   ["Neutral Grip Pull Ups (w/u 12, 8)","4",W34("6, 6, 6+, 6+","6, 6, 6+, 3+"),"","RPE 8/9"],
+   ["Goblet Lateral Valslide Lunge",W34("3","4"),"6ea","",""],
+   ["Dumbbell Bench Press (w/u 12, 8)","4",W34("6, 6, 6+, 6+","6, 6, 6+, 3+"),"","RPE 7"],
+   ["SL Hip Lift off MB",W34("3","4"),"6ea","3s hold @ top",""],
+   ["Chest Supported DB Row","4","8","1s hold @ top","RPE 7"],
+   ["HK SA Landmine Press w/ Reach","4","6ea","","RPE 7"],
+   ["Handcuff Mini Band Lateral Bear Crawl","3","10yd ea","",""],
+   ["KB Cross Carry","3","40yd","","RPE 8"],
+   ["V Ab Wheel Out","3","8ea","",""]]}]},
+ {id:"P3", name:"Phase 3 · Power", weeks:["2026-11-23","2026-11-30","2026-12-07","2026-12-14"], note:"Move weight explosively. Take weight off if needed to keep bar speed high on power lifts.", days:[
+  {name:"Day 1", mb:"MB Kickstand OH Slams 3×3ea", ex:[
+   ["Trap Bar Jumps","5","5","","25% 1RM"],
+   ["TRX 90/90 ISO Holds","4","5 (3s hold)","",""],
+   ["Anderson Front Squat (pins)","4","5, 5, 5+, 5+","",""],
+   ["Bench 90/90 DB Full Range ER","1-3","8","","5–8 lb DB"],
+   ["Heavy Romanian Deadlift","4","5, 5, 5+, 5+","",""],
+   ["Plank Pull Thrus","4","8ea","",""],
+   ["2 DB FFE Bulgarian SS","3","6ea","",""],
+   ["V Ab Roll Outs","3","10-15ea","",""],
+   ["BB Speed Bicep Curls","3","20sec","",""]]},
+  {name:"Day 2", mb:"MB QB Shuffle Shot Put Throws 3×3ea", ex:[
+   ["Landmine Rotational Clean to Press","4","5ea","",""],
+   ["Mini Band Hip Flexion and Clams","3","10ea","",""],
+   ["MB Plyo Push Ups","4","8, 8, 8, 8+","",""],
+   ["ATYTs","4","8ea","",""],
+   ["Supine TRX Row on SB (add weight)","4","8+","",""],
+   ["TK Cook Bar Press to OH Lift","4","8ea","",""],
+   ["OH Tricep Extension","3","AMAP","",""],
+   ["Body Saw Push Ups","3","6ea","",""],
+   ["Low to High Rope Face Pulls (2s hold)","3","10","",""]]},
+  {name:"Day 3", mb:"MB Tall Kneeling OH Catch & Slam 3×6", ex:[
+   ["Box Squat Jump Squats","4","6","","30% 1RM"],
+   ["Hanging Leg Raises","4","10-15","",""],
+   ["BB Front Rack Reverse Lunge","4","3ea","","Heavy"],
+   ["DB Pullover","1-2","8","",""],
+   ["Walking Lunge + SL DL","4","6ea","",""],
+   ["2 Way BB Forearm Curls","4","Failure","",""],
+   ["Glute Ham Raises (5s ECC)","3","8-12","",""],
+   ["SL SS Lateral Box Jump w/ 25 lb plate","3","6ea","",""],
+   ["Landmine Arcs","3","6ea","",""]]},
+  {name:"Day 4", mb:"MB Lunge Stance Rotational Slam over Knee 3×3ea", ex:[
+   ["Sumo Deadlift High Pulls","4","6, 6, 6+, 6+","",""],
+   ["TRX Y Negatives","4","8","",""],
+   ["Band Assisted Plyo Pull Ups","4","6, 6, 6+, 6+","",""],
+   ["OH BB Lateral Lunge","4","6ea","",""],
+   ["Low Incline DB Bench","4","5, 5, 5+, 5+","",""],
+   ["Plank on Bench SA Row","4","5, 5, 5+, 5+","",""],
+   ["KB Cross Face Carry (BB Javelin OH)","3","20-20yds","",""],
+   ["Incline HK Cable Chop","3","6ea","",""],
+   ["DB Hammer Curls","3","8ea","",""]]}]},
+ {id:"P4", name:"Phase 4 · Speed (Home)", weeks:["2026-12-07","2026-12-14","2026-12-21","2026-12-28"], note:"Move weight as fast as possible on core lifts. Use VBT sensors if you have them; otherwise follow the RPE. Cluster = many sets, low reps; follow the rest intervals.", days:[
+  {name:"Day 1", mb:"MB Reverse OH Throws 3×6", ex:[
+   ["Banded Box Squats (Cluster)","8","3 (60s rest)","","0.9 m/s+ or 40–60% 1RM"],
+   ["Weighted Bulgarian SS Jumps","4","6ea","","5–15 lb DBs"],
+   ["SA Prone Trap Raise (2s hold)","4","5ea","","2.5–5 lb plate"],
+   ["Glute Ham Raise (5s ECC)","4","8","",""],
+   ["Banded Lateral Jump w/ Stick","4","8ea","",""],
+   ["Pistol Squat","3","4ea","",""],
+   ["Dragon Flags","3","8-10","",""],
+   ["SA Alternating KB Swing","3","10ea","",""]]},
+  {name:"Day 2", mb:"MB QB Shuffle Shot Put Throws 3×3ea", ex:[
+   ["Band Assisted Plyo Push Ups","4","10","",""],
+   ["Partner Banded Lateral Shuffles","4","10ea","",""],
+   ["Cable SS Push Pull Combo","4","6ea","","Fast"],
+   ["Plate Chops Low to High","4","6ea","","10 or 25 lb plate"],
+   ["DB Lawn Mower Rows","4","6ea","","Explosive"],
+   ["Stability Ball Ninja Kicks","4","8ea","",""],
+   ["Body Saw Push Ups","3","6ea","",""],
+   ["ATYTs","3","10ea","",""],
+   ["Heavy Sled Push to Sprints","3","10yd push, 20yd sprint","",""]]},
+  {name:"Day 3", mb:"MB Front Foot Elevated Rotational Slam 3×3ea", ex:[
+   ["Banded Broad Jumps w/ Stick","4","4","",""],
+   ["PB Supine OH MB Throw","4","6","",""],
+   ["Banded Trap Bar Deadlift (Cluster)","8","3 (60s rest)","","0.7–0.9 m/s or 50–70% 1RM"],
+   ["SA DB Plyo Lateral Lunge (optional band)","4","6ea","",""],
+   ["GHD 3 Way Plate Punch","4","3ea","Down/back = 1","10 or 25 lb plate"],
+   ["90° Lat Bound w/ SL Stick","4","5ea","",""],
+   ["DB Hammer Curls","3","15","",""],
+   ["Reverse Sled Drags (Heavy)","3","15yd/15yd","",""],
+   ["Lateral Sled Sprints (Light/Med)","3","15yd/15yd","",""]]},
+  {name:"Day 4", mb:"MB OH Slam to Side Toss 3×3ea", ex:[
+   ["SA DB/KB Snatch","4","6ea","",""],
+   ["BB or Banded Hip Bridge (2s hold)","4","6","",""],
+   ["Weighted Pull Ups (Cluster)","8","3 (60s rest)","",""],
+   ["Standing Speed Chop Series (OH, X-body, Rotational)","4","10ea","Fast","5–10 lb"],
+   ["Incline Lunge Cable Chop","4","6ea","2s holds",""],
+   ["OH Tall Kneeling to Stand (optional bottoms-up KB)","3","5ea","",""],
+   ["OH Banded Tricep Extension","3","AMAP","",""],
+   ["Band Resisted SS Jumps","3","5ea","",""]]}]},
+ {id:"P5", name:"Phase 5 · PAP Contrast", weeks:["2027-01-11","2027-01-18","2027-01-25","2027-02-01"], note:"Pair a heavy lift with a fast movement of the same pattern to boost power output. First game is the week of 2/15.", days:[
+  {name:"Day 1", mb:"MB Reverse OH Throws 3×4", ex:[
+   ["Trap Bar ISO Hold (5s)","3","3","",""],
+   ["Trap Bar DL Jumps","4","5","",""],
+   ["Cable Rotational Row","3","10ea","",""],
+   ["Landmine Rotational Clean to Press","3","6ea","",""],
+   ["Front Rack Reverse Lunges (Heavy)","4","3×4-6, 1×3+","",""],
+   ["BB Speed Curls","3","15sec","",""],
+   ["Banded Explosive Step Ups","3","8ea","",""],
+   ["ABC Pallof Press","3","1ea","",""]]},
+  {name:"Day 2", mb:"MB Scoop Throws 3×3ea", ex:[
+   ["SA DB Snatch","4","5ea","",""],
+   ["Partner Eccentric Leg Throws","3","10","",""],
+   ["Lawnmower DB Row (Heavy)","3","10","",""],
+   ["Banded 45° Bound","4","5ea","",""],
+   ["DB Push Press","3","10","",""],
+   ["Hamstring Band Flutters","3","15sec","",""],
+   ["Slide Board Skaters (no board: lateral bounds 3×5ea)","3","30sec","",""]]},
+  {name:"Day 3", mb:"MB Skip to OH Soccer Throw 3×3ea", ex:[
+   ["Split Squat ISO Hold (5s)","3","3ea","",""],
+   ["DB Box Jumps","4","6","",""],
+   ["Goblet Squat Curl Press Out","3","8","",""],
+   ["Banded KB Swings","4","10","",""],
+   ["Face Pulls","3","12","",""],
+   ["Foam Roller Reach, Roll, Lift","3","6 breaths","",""],
+   ["RFESS ISO Hold to Jump","4","5ea (3s hold)","",""],
+   ["Sled Push to Sprint","3","10yd/15yd","",""],
+   ["Sprinter Sit Ups","3","8ea","",""]]}]}
+];
+
+// ===== Helpers =====
+const $ = s=>document.querySelector(s);
+const esc = s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const pad = n=>String(n).padStart(2,"0");
+const iso = d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const parseISO = s=>{const [y,m,d]=String(s).slice(0,10).split("-").map(Number);return new Date(y,m-1,d)};
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+const shortDate = d=>d.toLocaleDateString(undefined,{month:"short",day:"numeric"});
+const timeOf = t=>new Date(t).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
+const fmt = n=>Math.round(Number(n)||0).toLocaleString();
+const pick=(v,w)=>Array.isArray(v)?v[Math.min(w,v.length-1)]:v;
+const numOr0=v=>{const n=parseFloat(v);return isFinite(n)?n:0};
+function setCount(s){const m=String(s).match(/\d+/g);return m?Math.max(...m.map(Number)):1}
+function repsFor(r,sets){
+  const s=String(r);
+  if(/sec|yd|breath|failure|amap|max/i.test(s)) return Array(sets).fill("");
+  const parts=s.split(",").map(x=>x.trim());
+  if(parts.length===sets) return parts.map(p=>(p.match(/\d+/)||[""])[0]);
+  const m=s.match(/\d+/); return Array(sets).fill(m?m[0]:"");
+}
+function locate(date){
+  const t=parseISO(iso(date));
+  for(const p of PROGRAM) for(let w=0;w<p.weeks.length;w++){
+    const s=parseISO(p.weeks[w]); if(t>=s && t<addDays(s,7)) return {p:p.id,w};
+  }
+  let best={p:PROGRAM[0].id,w:0};
+  for(const p of PROGRAM) for(let w=0;w<p.weeks.length;w++) if(parseISO(p.weeks[w])<=t) best={p:p.id,w};
+  return best;
+}
+const phaseById=id=>PROGRAM.find(p=>p.id===id)||PROGRAM[0];
+const store={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},
+             set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}},
+             del(k){try{localStorage.removeItem(k)}catch(e){}}};
+function setMsg(id,text,kind){const el=$(id);if(!el)return;el.className="msg"+(kind?" "+kind:"");el.textContent=text||""}
+
+async function rpc(fn,args={}){
+  const headers={"Content-Type":"application/json","apikey":SUPABASE_KEY};
+  if(SUPABASE_KEY.startsWith("eyJ")) headers.Authorization="Bearer "+SUPABASE_KEY;
+  let r;
+  try{ r=await fetch(`${SUPABASE_URL}/rest/v1/rpc/${fn}`,{method:"POST",headers,body:JSON.stringify(args)}); }
+  catch(e){ throw new Error("Can't reach the server. Check your connection and try again."); }
+  if(!r.ok){ let m=""; try{m=(await r.json()).message}catch(e){} throw new Error(m||`Server error (${r.status}). Try again.`); }
+  const t=await r.text(); return t?JSON.parse(t):null;
+}
+
+// ===== State =====
+const now0=locate(new Date());
+const S={auth:store.get("iwu-auth"),data:null,tab:store.get("iwu-tab")||"checkin",
+  sel:{p:now0.p,w:now0.w,d:0},boardWeek:null,draft:{},liftKey:null,timers:[],
+  coachPass:store.get("iwu-coach"),coach:null,coachSessKey:null,coachPlayersKey:null,ciKey:null};
+function clearTimers(){S.timers.forEach(clearInterval);S.timers=[]}
+function every(ms,fn){S.timers.push(setInterval(fn,ms))}
+
+function phaseTag(){
+  const p=phaseById(now0.p); const s=parseISO(p.weeks[now0.w]);
+  $("#phaseTag").textContent=`${p.name.split(" · ")[0]} · Week ${now0.w+1} · ${shortDate(s)}`;
+}
+
+// ===== Boot / routing =====
+window.addEventListener("hashchange",route);
+route();
+function route(){
+  clearTimers(); phaseTag();
+  if(SUPABASE_URL.startsWith("__")){ $("#app").innerHTML=`<div class="card"><h2>Almost there</h2><p class="muted">Add the Supabase Project URL and key at the top of the script in index.html.</p></div>`; return; }
+  if(location.hash==="#coach"){ document.body.classList.add("coach"); $("#tabs").hidden=true; renderCoach(); return; }
+  document.body.classList.remove("coach");
+  if(!S.auth){ $("#tabs").hidden=true; renderLogin(); return; }
+  if(S.data){ render(); return; }
+  loadData().then(render).catch(e=>{ $("#app").innerHTML=`<div class="card"><h2>Couldn't load</h2><p class="msg err">${esc(e.message)}</p><button id="retry">Try again</button></div>`; $("#retry").onclick=route; });
+}
+async function loadData(){
+  const d=await rpc("player_data",{p_id:S.auth.id,p_pin:S.auth.pin});
+  if(!d.ok){ const err=d.error; S.auth=null;S.data=null;store.del("iwu-auth"); throw Object.assign(new Error(err),{signedOut:true}); }
+  S.data=d; if(!S.boardWeek) S.boardWeek=d.week;
+  return d;
+}
+async function reload(){ try{ await loadData(); }catch(e){ if(e.signedOut){ route(); } throw e; } }
+
+// ===== Sign in / join =====
+let loginMode="in";
+async function renderLogin(msg){
+  $("#app").innerHTML=`<div class="card"><p class="muted">Loading roster…</p></div>`;
+  let players=[];
+  try{ players=await rpc("list_players"); }catch(e){ $("#app").innerHTML=`<div class="card"><p class="msg err">${esc(e.message)}</p><button id="retry">Try again</button></div>`; $("#retry").onclick=()=>renderLogin(); return; }
+  if(!players.length) loginMode="join";
+  const opts=players.map(p=>`<option value="${esc(p.id)}">${esc(p.name)}${p.num?` #${esc(p.num)}`:""}</option>`).join("");
+  $("#app").innerHTML=`<div class="card">
+    <h2>Offseason lifts</h2>
+    <p class="muted">Check in at lifts, log your weights, and see where you rank on this week's board.</p>
+    <div class="seg" role="group" aria-label="Sign in or join">
+      <button id="mIn" aria-pressed="${loginMode==="in"}">I'm on the roster</button>
+      <button id="mJoin" aria-pressed="${loginMode==="join"}">First time here</button>
+    </div>
+    <div id="inForm" ${loginMode==="in"?"":"hidden"}>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <label for="lName">Your name<select id="lName"><option value="">Choose your name</option>${opts}</select></label>
+        <label for="lPin">4-digit PIN<input id="lPin" type="password" inputmode="numeric" maxlength="4" autocomplete="current-password"></label>
+        <button class="primary" id="lGo">Sign in</button>
+        <p class="small muted">Forgot your PIN? A coach can reset it.</p>
+      </div>
+    </div>
+    <div id="joinForm" ${loginMode==="join"?"":"hidden"}>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="namegrid">
+          <label for="jName">First and last name<input id="jName" autocomplete="name" placeholder="First Last"></label>
+          <label for="jNum">Jersey #<input id="jNum" inputmode="numeric" maxlength="3"></label>
+        </div>
+        <div class="grid2">
+          <label for="jPin">Make a 4-digit PIN<input id="jPin" type="password" inputmode="numeric" maxlength="4" autocomplete="new-password"></label>
+          <label for="jPin2">Type it again<input id="jPin2" type="password" inputmode="numeric" maxlength="4" autocomplete="new-password"></label>
+        </div>
+        <button class="primary" id="jGo">Join the roster</button>
+      </div>
+    </div>
+    <p class="msg err" id="lMsg">${esc(msg||"")}</p>
+  </div>
+  <p class="small muted" style="text-align:center"><a href="#coach">Coach screen</a></p>`;
+  $("#mIn").onclick=()=>{loginMode="in";renderLogin()};
+  $("#mJoin").onclick=()=>{loginMode="join";renderLogin()};
+  const signIn=async(id,pin)=>{
+    S.auth={id,pin};
+    try{ await loadData(); store.set("iwu-auth",S.auth); route(); }
+    catch(e){ S.auth=null; setMsg("#lMsg",e.message,"err"); }
+  };
+  $("#lGo").onclick=async()=>{
+    const id=$("#lName").value, pin=$("#lPin").value.trim();
+    if(!id) return setMsg("#lMsg","Choose your name first.","err");
+    if(!/^\d{4}$/.test(pin)) return setMsg("#lMsg","Enter your 4-digit PIN.","err");
+    $("#lGo").disabled=true; await signIn(id,pin); if($("#lGo"))$("#lGo").disabled=false;
+  };
+  $("#lPin").onkeydown=e=>{if(e.key==="Enter")$("#lGo").click()};
+  $("#jGo").onclick=async()=>{
+    const name=$("#jName").value.trim(), num=$("#jNum").value.trim(), pin=$("#jPin").value.trim();
+    if(name.split(/\s+/).length<2) return setMsg("#lMsg","Enter your first and last name.","err");
+    if(!/^\d{4}$/.test(pin)) return setMsg("#lMsg","Your PIN must be exactly 4 digits.","err");
+    if(pin!==$("#jPin2").value.trim()) return setMsg("#lMsg","The two PINs don't match.","err");
+    $("#jGo").disabled=true;
+    try{
+      const r=await rpc("register_player",{p_name:name,p_num:num,p_pin:pin});
+      if(!r.ok){ setMsg("#lMsg",r.error,"err"); $("#jGo").disabled=false; return; }
+      await signIn(r.id,pin);
+    }catch(e){ setMsg("#lMsg",e.message,"err"); $("#jGo").disabled=false; }
+  };
+}
+
+// ===== Main app =====
+const ICONS={
+ checkin:'<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3M21 14v7h-7"/></svg>',
+ lift:'<svg viewBox="0 0 24 24"><path d="M6 7v10M3 9v6M18 7v10M21 9v6M6 12h12"/></svg>',
+ board:'<svg viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>',
+ me:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>'};
+function renderTabs(){
+  const tabs=[["checkin","Check in"],["lift","Lift"],["board","Board"],["me","Me"]];
+  $("#tabsIn").innerHTML=tabs.map(([k,l])=>`<button id="tab-${k}" data-tab="${k}" aria-current="${S.tab===k}">${ICONS[k]}${l}</button>`).join("");
+  $("#tabs").hidden=false;
+  $("#tabsIn").querySelectorAll("button").forEach(b=>b.onclick=()=>{S.tab=b.dataset.tab;store.set("iwu-tab",S.tab);render();window.scrollTo(0,0)});
+}
+function render(){
+  clearTimers(); renderTabs();
+  ({checkin:renderCheckin,lift:renderLift,board:renderBoard,me:renderMe}[S.tab]||renderCheckin)();
+}
+const myCheckins=()=>S.data.checkins||[];
+const todayCheckin=()=>myCheckins().find(c=>c.day===S.data.today);
+const weekVol=wk=>(S.data.entries||[]).filter(e=>e.week===wk).reduce((a,e)=>a+Number(e.volume||0),0);
+
+// ----- Check in -----
+async function renderCheckin(){
+  const done=todayCheckin();
+  const wk=S.data.week;
+  const weekLifts=myCheckins().filter(c=>c.day>=wk && c.day<iso(addDays(parseISO(wk),7))).length;
+  $("#app").innerHTML=`<div id="ciCard" class="card"><p class="muted">Checking for an open lift…</p></div>
+    <div class="card"><div class="row between"><h3>This week</h3><span class="chip">${weekLifts} lift${weekLifts===1?"":"s"} attended</span></div>
+    <div class="row between"><span class="muted">Volume lifted</span><span class="big-num num">${fmt(weekVol(wk))}<small class="small muted"> lb</small></span></div></div>`;
+  S.ciKey=null;
+  if(done){
+    $("#ciCard").innerHTML=`<span class="chip ok" style="align-self:flex-start">Checked in</span><h2>You're in for today</h2>
+      <p class="muted">${esc(done.label||"Lift")} · ${timeOf(done.at)}</p>
+      <button class="primary" id="goLift">Log today's lift</button>`;
+    $("#goLift").onclick=()=>{S.tab="lift";store.set("iwu-tab","lift");render()};
+    return;
+  }
+  const poll=async()=>{
+    let s; try{ s=await rpc("current_session"); }catch(e){ return; }
+    const key=s.active?`${s.label}|${s.ends_at}`:"none";
+    if(key===S.ciKey) return; S.ciKey=key;
+    const card=$("#ciCard"); if(!card) return;
+    if(!s.active){
+      card.innerHTML=`<span class="chip" style="align-self:flex-start">No lift open</span><h2>Check in at the gym</h2>
+        <p class="muted">When a lift starts, scan the QR code on the coach's screen, then enter the 4-digit code shown under it.</p>`;
+      return;
+    }
+    card.innerHTML=`<div class="row between"><span class="chip live">Lift open</span><span class="small muted">until ${timeOf(s.ends_at)}</span></div>
+      <h2>${esc(s.label)}</h2>
+      <p class="muted">Enter the 4-digit code on the coach's screen. It changes every minute.</p>
+      <label for="ciCode">Check-in code<input id="ciCode" class="codein num" inputmode="numeric" maxlength="4" autocomplete="one-time-code" placeholder="0000"></label>
+      <button class="primary" id="ciGo">Check in</button><p class="msg" id="ciMsg"></p>`;
+    const go=async()=>{
+      const code=$("#ciCode").value.trim();
+      if(!/^\d{4}$/.test(code)) return setMsg("#ciMsg","Enter the 4 digits from the screen.","err");
+      $("#ciGo").disabled=true;
+      try{
+        const r=await rpc("check_in",{p_id:S.auth.id,p_pin:S.auth.pin,p_code:code});
+        if(!r.ok){ setMsg("#ciMsg",r.error,"err"); $("#ciGo").disabled=false; return; }
+        if(r.phase){ S.sel={p:r.phase,w:r.week??0,d:r.day??0}; S.liftKey=null; }
+        await reload(); render();
+      }catch(e){ if($("#ciGo")){ setMsg("#ciMsg",e.message,"err"); $("#ciGo").disabled=false; } }
+    };
+    $("#ciGo").onclick=go; $("#ciCode").onkeydown=e=>{if(e.key==="Enter")go()};
+  };
+  poll(); every(15000,poll);
+}
+
+// ----- Lift logging -----
+const entryKey=(p,w,d,i)=>`${p}.${w}.${d}.${i}`;
+const entryMap=()=>Object.fromEntries((S.data.entries||[]).map(e=>[e.key,e]));
+function lastFor(name,exclude){
+  let best=null;
+  for(const e of S.data.entries||[]){ if(e.key===exclude||e.exercise!==name)continue; if(!best||e.at>best.at)best=e; }
+  return best;
+}
+function renderLift(){
+  const {p,w,d}=S.sel; const ph=phaseById(p); const day=ph.days[d]||ph.days[0];
+  const key=`${p}.${w}.${d}`; const em=entryMap();
+  if(S.liftKey!==key){
+    S.draft={};
+    day.ex.forEach((ex,i)=>{
+      const sets=setCount(pick(ex[1],w)); const f=em[entryKey(p,w,d,i)];
+      const reps=repsFor(pick(ex[2],w),sets);
+      S.draft[i]=Array.from({length:sets},(_,j)=>({w:f?.sets?.[j]?.[0]??"",r:f?.sets?.[j]?.[1]??reps[j]}));
+    });
+    S.liftKey=key;
+  }
+  const opts=(arr,val)=>arr.map(([v,l])=>`<option value="${v}"${String(v)===String(val)?" selected":""}>${esc(l)}</option>`).join("");
+  const wkStart=parseISO(ph.weeks[w]);
+  const exHtml=day.ex.map((ex,i)=>{
+    const [name,,,tempo,wt]=ex; const sets=pick(ex[1],w), reps=pick(ex[2],w);
+    const last=lastFor(name,entryKey(p,w,d,i));
+    const lastSets=last?(last.sets||[]).filter(s=>s[0]!==""):[];
+    const lastTxt=lastSets.length?`Last time (${shortDate(new Date(last.at))}): ${lastSets.map(s=>`${s[0]}×${s[1]||"–"}`).join(", ")}`:"";
+    return `<div class="ex"><div class="ex-name">${esc(name)}</div>
+      <div class="rx"><span class="chip">${esc(sets)} × ${esc(reps)}</span>${tempo?`<span class="chip">${esc(tempo)}</span>`:""}${wt?`<span class="chip">${esc(wt)}</span>`:""}</div>
+      ${lastTxt?`<div class="last">${esc(lastTxt)}</div>`:""}
+      <div class="sets"><span class="h">Set</span><span class="h">Weight (lb)</span><span class="h">Reps</span>
+      ${S.draft[i].map((s,j)=>`<span class="n">${j+1}</span>
+        <input id="w-${i}-${j}" data-i="${i}" data-j="${j}" data-f="w" inputmode="decimal" placeholder="lb" value="${esc(s.w)}" aria-label="${esc(name)} set ${j+1} weight">
+        <input id="r-${i}-${j}" data-i="${i}" data-j="${j}" data-f="r" inputmode="numeric" placeholder="reps" value="${esc(s.r)}" aria-label="${esc(name)} set ${j+1} reps">`).join("")}
+      </div></div>`;
+  }).join("");
+  $("#app").innerHTML=`<div class="card">
+      <div class="grid2">
+        <label for="selP">Phase<select id="selP">${opts(PROGRAM.map(x=>[x.id,x.name]),p)}</select></label>
+        <label for="selW">Week<select id="selW">${opts(ph.weeks.map((x,i)=>[i,`Week ${i+1} · ${shortDate(parseISO(x))}`]),w)}</select></label>
+      </div>
+      <label for="selD">Day<select id="selD">${opts(ph.days.map((x,i)=>[i,x.name]),d)}</select></label>
+      ${ph.note?`<p class="small muted">${esc(ph.note)}</p>`:""}
+    </div>
+    <div class="card">
+      <div class="row between"><h2>${esc(day.name)}</h2><span class="small muted">Week of ${shortDate(wkStart)}</span></div>
+      <p class="small muted">Warm-up: K's Full Warmup, then pair CNS activation jumps with medball${day.mb?`: ${esc(day.mb)}`:""}.</p>
+      ${exHtml}
+    </div>
+    <div class="savebar"><div><div class="small muted">Workout volume</div><div class="lb-vol num" id="volNow">0<small>lb</small></div></div>
+      <div class="row" style="flex-wrap:nowrap;justify-content:flex-end"><span class="msg" id="saveMsg"></span><button class="primary" id="saveBtn">Save</button></div></div>
+    <p class="small muted">Volume = weight × reps for every set. For "ea" lifts, log reps per side. Leave weight blank on bodyweight, timed, and sled work. Saved workouts count toward the week you log them.</p>`;
+  const reset=()=>{S.liftKey=null;renderLift()};
+  $("#selP").onchange=e=>{S.sel={p:e.target.value,w:0,d:0};reset()};
+  $("#selW").onchange=e=>{S.sel.w=+e.target.value;reset()};
+  $("#selD").onchange=e=>{S.sel.d=+e.target.value;reset()};
+  $("#app").querySelectorAll(".sets input").forEach(inp=>inp.oninput=()=>{S.draft[inp.dataset.i][inp.dataset.j][inp.dataset.f]=inp.value.trim();updVol();setMsg("#saveMsg","")});
+  updVol();
+  $("#saveBtn").onclick=saveWorkout;
+}
+function draftVol(){let t=0;for(const i in S.draft)for(const s of S.draft[i])t+=numOr0(s.w)*numOr0(s.r);return t}
+function updVol(){const el=$("#volNow");if(el)el.innerHTML=`${fmt(draftVol())}<small>lb</small>`}
+async function saveWorkout(){
+  const {p,w,d}=S.sel; const day=phaseById(p).days[d]; const em=entryMap();
+  const payload=[];
+  day.ex.forEach((ex,i)=>{
+    const k=entryKey(p,w,d,i); const sets=S.draft[i].map(s=>[s.w,s.r]);
+    if(sets.some(s=>s[0]!=="") || em[k]) payload.push({key:k,exercise:ex[0],sets});
+  });
+  if(!payload.length) return setMsg("#saveMsg","Enter a weight first.","err");
+  const btn=$("#saveBtn"); btn.disabled=true; setMsg("#saveMsg","Saving…");
+  try{
+    const r=await rpc("save_entries",{p_id:S.auth.id,p_pin:S.auth.pin,p_entries:payload});
+    if(!r.ok){ setMsg("#saveMsg",r.error,"err"); btn.disabled=false; return; }
+    await reload();
+    setMsg("#saveMsg","Saved","ok");
+  }catch(e){ setMsg("#saveMsg",e.message,"err"); }
+  if($("#saveBtn")) $("#saveBtn").disabled=false;
+}
+
+// ----- Leaderboard -----
+async function renderBoard(){
+  const wk=S.boardWeek||S.data.week; const start=parseISO(wk); const end=addDays(start,6);
+  const isThis=wk===S.data.week;
+  $("#app").innerHTML=`<div class="card">
+    <div class="row between" style="flex-wrap:nowrap"><button id="bPrev" aria-label="Previous week">‹</button>
+      <div style="text-align:center"><h2>${isThis?"This week":"Week of "+shortDate(start)}</h2><div class="small muted">${shortDate(start)} – ${shortDate(end)}</div></div>
+      <button id="bNext" aria-label="Next week"${isThis?" disabled":""}>›</button></div>
+    <p class="small muted">Ranked by total weight moved (weight × reps on every logged set).</p>
+    <div id="lb"><div class="empty">Loading…</div></div></div>`;
+  $("#bPrev").onclick=()=>{S.boardWeek=iso(addDays(start,-7));render()};
+  $("#bNext").onclick=()=>{S.boardWeek=iso(addDays(start,7));render()};
+  const load=async()=>{
+    let rows; try{ rows=await rpc("leaderboard",{p_week:wk}); }catch(e){ if($("#lb"))$("#lb").innerHTML=`<p class="msg err">${esc(e.message)}</p>`; return; }
+    const me=S.data.player.name;
+    let rank=0,lastVol=null,idx=0;
+    const html=rows.map(r=>{ idx++; const v=Number(r.volume)||0; if(v!==lastVol){rank=idx;lastVol=v}
+      const rk=v>0?rank:"–";
+      return `<div class="lb-row r${v>0?rank:0}${r.name===me?" me":""}"><div class="rank">${rk}</div>
+        <div><div class="lb-name">${esc(r.name)}${r.num?` <span class="muted">#${esc(r.num)}</span>`:""}</div><div class="small muted">${r.lifts} lift${r.lifts===1?"":"s"} attended</div></div>
+        <div class="lb-vol num">${fmt(v)}<small>lb</small></div></div>`}).join("");
+    if($("#lb")) $("#lb").innerHTML=rows.length?html:`<div class="empty">No players yet.</div>`;
+  };
+  load(); if(isThis) every(60000,load);
+}
+
+// ----- Me -----
+function renderMe(){
+  const me=S.data.player; const wk=S.data.week;
+  const prs={};
+  for(const e of S.data.entries||[]) for(const s of e.sets||[]){ const v=numOr0(s[0]); if(v>0&&(!prs[e.exercise]||v>prs[e.exercise].w)) prs[e.exercise]={w:v,r:s[1]}; }
+  const prList=Object.entries(prs).sort((a,b)=>b[1].w-a[1].w);
+  $("#app").innerHTML=`<div class="card">
+      <div class="namegrid">
+        <label for="mName">Name<input id="mName" value="${esc(me.name)}"></label>
+        <label for="mNum">Jersey #<input id="mNum" inputmode="numeric" maxlength="3" value="${esc(me.num||"")}"></label>
+      </div>
+      <div class="row"><button id="mSave">Save</button><span class="msg" id="mMsg"></span></div></div>
+    <div class="grid2">
+      <div class="card"><span class="small muted">This week</span><span class="big-num num">${fmt(weekVol(wk))}</span><span class="small muted">lb moved</span></div>
+      <div class="card"><span class="small muted">Lifts attended</span><span class="big-num num">${myCheckins().length}</span><span class="small muted">this offseason</span></div>
+    </div>
+    <div class="card"><h3>Heaviest weight by lift</h3>
+      ${prList.length?`<div>${prList.map(([n,v])=>`<div class="pr"><span>${esc(n)}</span><span class="num"><b>${fmt(v.w)}</b> lb${v.r?` × ${esc(v.r)}`:""}</span></div>`).join("")}</div>`:'<div class="empty">Log a workout and your heaviest sets show up here.</div>'}
+    </div>
+    <div class="row between"><button class="link" id="mOut">Sign out</button><a class="small" href="#coach">Coach screen</a></div>`;
+  $("#mSave").onclick=async()=>{
+    const name=$("#mName").value.trim();
+    try{
+      const r=await rpc("update_profile",{p_id:S.auth.id,p_pin:S.auth.pin,p_name:name,p_num:$("#mNum").value.trim()});
+      if(!r.ok) return setMsg("#mMsg",r.error,"err");
+      await reload(); setMsg("#mMsg","Saved","ok");
+    }catch(e){ setMsg("#mMsg",e.message,"err"); }
+  };
+  $("#mOut").onclick=()=>{store.del("iwu-auth");S.auth=null;S.data=null;loginMode="in";route()};
+}
+
+// ===== Coach screen =====
+let wakeLock=null;
+async function keepAwake(){ try{ if(navigator.wakeLock && document.visibilityState==="visible") wakeLock=await navigator.wakeLock.request("screen"); }catch(e){} }
+document.addEventListener("visibilitychange",()=>{ if(location.hash==="#coach") keepAwake(); });
+
+function renderCoachLogin(msg){
+  $("#app").innerHTML=`<div class="card"><h2>Coach screen</h2>
+    <p class="muted">Open check-in, show the code at the door, and see who's here.</p>
+    <label for="cPass">Coach password<input id="cPass" type="password" autocomplete="current-password"></label>
+    <button class="primary" id="cGo">Open coach screen</button><p class="msg err" id="cMsg">${esc(msg||"")}</p></div>
+    <p class="small muted" style="text-align:center"><a href="#">Back to the player app</a></p>`;
+  const go=async()=>{
+    const pass=$("#cPass").value; if(!pass) return;
+    $("#cGo").disabled=true;
+    try{ const r=await rpc("coach_status",{p_pass:pass});
+      if(!r.ok){ setMsg("#cMsg",r.error,"err"); $("#cGo").disabled=false; return; }
+      S.coachPass=pass; store.set("iwu-coach",pass); renderCoach();
+    }catch(e){ setMsg("#cMsg",e.message,"err"); $("#cGo").disabled=false; }
+  };
+  $("#cGo").onclick=go; $("#cPass").onkeydown=e=>{if(e.key==="Enter")go()};
+}
+
+function renderCoach(){
+  if(!S.coachPass) return renderCoachLogin();
+  S.coachSessKey=null; S.coachPlayersKey=null;
+  $("#app").innerHTML=`<div class="coach-cols">
+      <div style="display:flex;flex-direction:column;gap:14px"><div class="card" id="cSess"><p class="muted">Loading…</p></div>
+        <div class="card" id="cReport"></div></div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="card" id="cToday"></div>
+        <div class="card" id="cWeek"><h3>This week's attendance</h3><div class="empty">Loading…</div></div>
+        <div class="card" id="cManage"></div>
+      </div></div>
+    <div class="row between"><a class="small" href="#">Back to the player app</a><button class="link" id="cOut">Sign out of coach screen</button></div>`;
+  $("#cOut").onclick=()=>{store.del("iwu-coach");S.coachPass=null;clearTimers();renderCoachLogin()};
+  keepAwake();
+  renderReport();
+  pollCoach(); every(4000,pollCoach);
+  loadWeek(); every(30000,loadWeek);
+  every(1000,tickCode);
+}
+async function pollCoach(){
+  let r; try{ r=await rpc("coach_status",{p_pass:S.coachPass}); }catch(e){ return; }
+  if(!r.ok){ store.del("iwu-coach"); S.coachPass=null; clearTimers(); return renderCoachLogin(r.error); }
+  S.coach={...r,fetched:Date.now()};
+  const s=r.session; const key=s?`${s.label}|${s.ends_at}`:"none";
+  if(key!==S.coachSessKey){ S.coachSessKey=key; renderCoachSession(); }
+  tickCode(); renderToday();
+  const inCount=r.players.filter(p=>p.in_at).length;
+  if(S.coachInCount!==undefined && inCount!==S.coachInCount) loadWeek();
+  S.coachInCount=inCount;
+  const pk=r.players.map(p=>p.id+p.name).join(",");
+  if(pk!==S.coachPlayersKey){ S.coachPlayersKey=pk; renderManage(); }
+}
+function tickCode(){
+  const s=S.coach?.session; const c=$("#code"); if(!s||!c) return;
+  const elapsed=Math.floor((Date.now()-S.coach.fetched)/1000);
+  const left=s.secs_left-elapsed;
+  if(left<=0){ c.textContent="····"; pollCoach(); return; }
+  c.textContent=s.code;
+  $("#codeBar").style.width=(left/60*100)+"%";
+  if(Date.now()>=new Date(s.ends_at).getTime()) pollCoach();
+}
+function renderCoachSession(){
+  const el=$("#cSess"); if(!el) return; const s=S.coach.session;
+  if(s){
+    const url=location.href.split("#")[0];
+    el.innerHTML=`<div class="row between"><span class="chip live">Check-in open</span><span class="small muted">closes ${timeOf(s.ends_at)}</span></div>
+      <h2>${esc(s.label)}</h2>
+      <div class="qr" id="qr"></div>
+      <p class="small muted" style="text-align:center">Scan to open the app, sign in, then enter this code:</p>
+      <div class="code num" id="code">${esc(s.code)}</div>
+      <div class="bar"><i id="codeBar"></i></div>
+      <p class="small muted" style="text-align:center">New code every minute. The previous minute's code still works.</p>
+      <button class="danger" id="cEnd">Close check-in</button><p class="msg" id="cEndMsg"></p>`;
+    try{ if(window.QRCode) new QRCode($("#qr"),{text:url,width:220,height:220,colorDark:"#000000",colorLight:"#ffffff",correctLevel:QRCode.CorrectLevel.M}); }catch(e){}
+    $("#cEnd").onclick=async()=>{ $("#cEnd").disabled=true; try{ await rpc("coach_close",{p_pass:S.coachPass}); pollCoach(); }catch(e){ setMsg("#cEndMsg",e.message,"err"); $("#cEnd").disabled=false; } };
+    return;
+  }
+  const loc=locate(new Date()); const ph=phaseById(loc.p);
+  el.innerHTML=`<h2>Start a lift</h2>
+    <label for="cDay">Workout<select id="cDay">${ph.days.map((x,i)=>`<option value="${i}">${esc(ph.name.split(" · ")[0])} W${loc.w+1} · ${esc(x.name)}</option>`).join("")}<option value="x">Active recovery / other</option></select></label>
+    <label for="cLen">Check-in stays open for<select id="cLen"><option value="30">30 minutes</option><option value="60" selected>60 minutes</option><option value="90">90 minutes</option><option value="120">2 hours</option></select></label>
+    <button class="primary" id="cStart">Open check-in</button><p class="msg" id="cMsg"></p>`;
+  $("#cStart").onclick=async()=>{
+    const v=$("#cDay").value, len=+$("#cLen").value;
+    const label=v==="x"?"Active recovery":`${ph.name.split(" · ")[0]} W${loc.w+1} · ${ph.days[+v].name}`;
+    $("#cStart").disabled=true;
+    try{
+      const r=await rpc("coach_open",{p_pass:S.coachPass,p_label:label,p_phase:loc.p,p_week:loc.w,p_day:v==="x"?0:+v,p_minutes:len});
+      if(!r.ok){ setMsg("#cMsg",r.error,"err"); $("#cStart").disabled=false; return; }
+      pollCoach();
+    }catch(e){ setMsg("#cMsg",e.message,"err"); $("#cStart").disabled=false; }
+  };
+}
+function renderToday(){
+  const el=$("#cToday"); if(!el) return; const ps=S.coach.players;
+  const inP=ps.filter(p=>p.in_at).sort((a,b)=>a.in_at<b.in_at?-1:1), out=ps.filter(p=>!p.in_at);
+  const row=(p,t)=>`<div class="att-row"><span>${t?"<b>":""}${esc(p.name)}${t?"</b>":""}${p.num?` <span class="muted">#${esc(p.num)}</span>`:""}</span><span class="small muted num">${t?timeOf(p.in_at):"—"}</span></div>`;
+  el.innerHTML=`<div class="row between"><h3>Today · ${shortDate(parseISO(S.coach.today))}</h3><span class="chip ok">${inP.length} / ${ps.length} in</span></div>
+    <div>${inP.map(p=>row(p,true)).join("")||'<div class="empty">Nobody has checked in yet today.</div>'}</div>
+    ${out.length?`<h3>Not checked in</h3><div>${out.map(p=>row(p,false)).join("")}</div>`:""}`;
+}
+async function loadWeek(){
+  let r; try{ r=await rpc("coach_week",{p_pass:S.coachPass,p_week:S.coach?.week||iso(new Date())}); }catch(e){ return; }
+  const el=$("#cWeek"); if(!el||!r.ok) return;
+  const start=parseISO(r.week); const days=[...Array(7)].map((_,i)=>iso(addDays(start,i)));
+  const dn=["M","T","W","T","F","S","S"];
+  el.innerHTML=`<h3>Week of ${shortDate(start)}</h3>
+    ${r.rows.length?`<div class="tbl-wrap"><table class="wk"><thead><tr><th>Player</th>${dn.map(d=>`<th>${d}</th>`).join("")}<th>Total</th></tr></thead><tbody>
+    ${r.rows.map(p=>`<tr><td>${esc(p.name)}</td>${days.map(d=>`<td class="${p.days.includes(d)?"y":"muted"}">${p.days.includes(d)?"✓":"·"}</td>`).join("")}<td class="tot num">${p.days.length}</td></tr>`).join("")}
+    </tbody></table></div>`:'<div class="empty">No players yet.</div>'}`;
+}
+// ----- Season report -----
+function csvDownload(filename,rows){
+  const cell=v=>{const s=String(v??"");return /[",\n]/.test(s)?`"${s.replace(/"/g,'""')}"`:s};
+  const text="﻿"+rows.map(r=>r.map(cell).join(",")).join("\r\n");
+  const url=URL.createObjectURL(new Blob([text],{type:"text/csv;charset=utf-8"}));
+  const a=document.createElement("a"); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),4000);
+}
+function describeKey(key){
+  const [p,w,d]=String(key).split("."); const ph=PROGRAM.find(x=>x.id===p);
+  return {phase:ph?ph.name:p, week:`Week ${(+w||0)+1}`, day:ph?.days[+d]?.name||`Day ${(+d||0)+1}`};
+}
+function renderReport(){
+  const el=$("#cReport"); if(!el) return;
+  const from=store.get("iwu-rep-from")||PROGRAM[0].weeks[0];
+  const to=store.get("iwu-rep-to")||iso(new Date());
+  el.innerHTML=`<h3>Season report</h3>
+    <div class="grid2">
+      <label for="rFrom">From<input id="rFrom" type="date" value="${esc(from)}"></label>
+      <label for="rTo">To<input id="rTo" type="date" value="${esc(to)}"></label>
+    </div>
+    <button class="primary" id="rGo">Show report</button>
+    <p class="msg" id="rMsg"></p>
+    <div id="rOut"></div>`;
+  $("#rGo").onclick=async()=>{
+    const f=$("#rFrom").value, t=$("#rTo").value;
+    if(!f||!t) return setMsg("#rMsg","Pick both dates.","err");
+    store.set("iwu-rep-from",f); store.set("iwu-rep-to",t);
+    $("#rGo").disabled=true; setMsg("#rMsg","Loading…");
+    try{
+      const r=await rpc("coach_report",{p_pass:S.coachPass,p_from:f,p_to:t});
+      if(!r.ok){ setMsg("#rMsg",r.error,"err"); $("#rGo").disabled=false; return; }
+      setMsg("#rMsg",""); showReport(r);
+    }catch(e){ setMsg("#rMsg",/coach_report/.test(e.message)?"Run the season report update in Supabase first (season-report-update.sql).":e.message,"err"); }
+    $("#rGo").disabled=false;
+  };
+}
+function showReport(r){
+  const ps=[...r.players].sort((a,b)=>b.lifts-a.lifts||Number(b.volume)-Number(a.volume)||a.name.localeCompare(b.name));
+  const range=`${shortDate(parseISO(r.from))} – ${shortDate(parseISO(r.to))}`;
+  const tag=`${r.from}_to_${r.to}`;
+  $("#rOut").innerHTML=`<p class="small muted">${range} · ${r.checkins.length} check-ins · ${ps.length} players</p>
+    <div class="row">
+      <button id="dlSum">Download summary</button>
+      <button id="dlAtt">Download attendance</button>
+      <button id="dlLog">Download lift log</button>
+    </div>
+    <div class="tbl-wrap"><table class="wk"><thead><tr><th>Player</th><th>Lifts</th><th>Workouts logged</th><th>Volume (lb)</th></tr></thead><tbody>
+    ${ps.map(p=>`<tr><td>${esc(p.name)}${p.num?` <span class="muted">#${esc(p.num)}</span>`:""}</td><td class="tot num">${p.lifts}</td><td class="num">${p.workouts}</td><td class="num">${fmt(p.volume)}</td></tr>`).join("")||`<tr><td colspan="4" class="muted">No players yet.</td></tr>`}
+    </tbody></table></div>`;
+  $("#dlSum").onclick=()=>csvDownload(`IWU-lifts-summary_${tag}.csv`,
+    [["Player","Jersey","Lifts attended","Workouts logged","Total volume (lb)"],...ps.map(p=>[p.name,p.num,p.lifts,p.workouts,Math.round(Number(p.volume)||0)])]);
+  $("#dlAtt").onclick=()=>csvDownload(`IWU-lifts-attendance_${tag}.csv`,
+    [["Date","Player","Jersey","Workout","Checked in at"],...r.checkins.map(c=>[c.day,c.name,c.num,c.label||"",new Date(c.at).toLocaleString()])]);
+  $("#dlLog").onclick=()=>{
+    const rows=[["Player","Jersey","Week of","Phase","Program week","Day","Exercise","Set","Weight (lb)","Reps","Set volume (lb)"]];
+    for(const e of r.entries){ const k=describeKey(e.key);
+      (e.sets||[]).forEach((s,i)=>{ if(String(s[0]??"")==="") return;
+        rows.push([e.name,e.num,e.week,k.phase,k.week,k.day,e.exercise,i+1,s[0],s[1]??"",Math.round(numOr0(s[0])*numOr0(s[1]))]); }); }
+    csvDownload(`IWU-lifts-log_${tag}.csv`,rows);
+  };
+}
+
+function renderManage(){
+  const el=$("#cManage"); if(!el) return; const ps=S.coach.players;
+  el.innerHTML=`<h3>Manage players</h3>
+    <label for="mpWho">Player<select id="mpWho"><option value="">Choose a player</option>${ps.map(p=>`<option value="${esc(p.id)}">${esc(p.name)}${p.num?` #${esc(p.num)}`:""}</option>`).join("")}</select></label>
+    <div class="grid2" style="align-items:end">
+      <label for="mpPin">New 4-digit PIN<input id="mpPin" inputmode="numeric" maxlength="4"></label>
+      <button id="mpReset">Reset PIN</button>
+    </div>
+    <div class="row between"><button class="danger" id="mpDel">Remove player</button><span class="msg" id="mpMsg"></span></div>
+    <p class="small muted">Removing a player deletes their check-ins and logged lifts.</p>`;
+  const who=()=>$("#mpWho").value;
+  $("#mpReset").onclick=async()=>{
+    if(!who()) return setMsg("#mpMsg","Choose a player.","err");
+    try{ const r=await rpc("coach_reset_pin",{p_pass:S.coachPass,p_player:who(),p_pin:$("#mpPin").value.trim()});
+      setMsg("#mpMsg",r.ok?"PIN reset. Tell the player their new PIN.":r.error,r.ok?"ok":"err"); if(r.ok)$("#mpPin").value=""; }
+    catch(e){ setMsg("#mpMsg",e.message,"err"); }
+  };
+  $("#mpDel").onclick=async()=>{
+    if(!who()) return setMsg("#mpMsg","Choose a player.","err");
+    const name=$("#mpWho").selectedOptions[0].textContent;
+    if(!window.confirm(`Remove ${name} and all of their data?`)) return;
+    try{ const r=await rpc("coach_remove_player",{p_pass:S.coachPass,p_player:who()});
+      if(!r.ok) return setMsg("#mpMsg",r.error,"err"); pollCoach(); loadWeek(); }
+    catch(e){ setMsg("#mpMsg",e.message,"err"); }
+  };
+}
+</script>
+</body>
+</html>
